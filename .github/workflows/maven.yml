@@ -31,7 +31,6 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v1
     - name: Download artifact
       uses: actions/download-artifact@master
       with:
@@ -46,4 +45,6 @@ jobs:
     - name: Docker build
       uses: actions/docker/cli@master
       with:
-        args: "build -t konrader/eon-consumption ."
+        args: "build -f target/Dockerfile -t konrader/eon-consumption ."
+    - name: Docker tag
+      run: docker tag konrader/eon-consumption:latest konrader/eon-consumption$(cat targets/version.txt)
