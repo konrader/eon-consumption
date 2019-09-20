@@ -49,5 +49,4 @@ jobs:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
     - name: DockerHub publish
-      run: docker push konrader/eon-consumption:latest
-      run: docker push konrader/eon-consumption:$(cat target/version.txt)
+      run: docker push konrader/eon-consumption
