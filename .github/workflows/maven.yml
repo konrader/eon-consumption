@@ -47,4 +47,4 @@ jobs:
       with:
         args: "build -f target/Dockerfile -t konrader/eon-consumption ."
     - name: Docker tag
-      run: docker tag konrader/eon-consumption:latest konrader/eon-consumption$(cat targets/version.txt)
+      run: docker tag konrader/eon-consumption:latest konrader/eon-consumption$(cat target/version.txt)
