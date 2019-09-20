@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.konrader</groupId>
 	<artifactId>eon-consumption</artifactId>
-	<version>0.1.0</version>
+	<version>0.1.1</version>
 	<name>eon-consumption</name>
 	<description>EON Electricity consumption fetcher and exporter to InfluxDB</description>
 	<inceptionYear>2019</inceptionYear>

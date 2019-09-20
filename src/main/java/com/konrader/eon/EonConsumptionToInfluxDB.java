@@ -1,6 +1,7 @@
 package com.konrader.eon;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -47,8 +48,7 @@ public class EonConsumptionToInfluxDB {
 		if (lastEonTime > lastInfluxTime) {
 			if (lastInfluxTime < 0) {
 				lastInfluxTime = eon.getContractStart().getTime();
-				System.out.println(
-						"No prior data in InfluxDB, fetching from EON contract start: " + new Date(lastInfluxTime));
+				log("No prior data in InfluxDB, fetching from EON contract start: " + new Date(lastInfluxTime));
 			}
 			Calendar cal = new Calendar.Builder().setTimeZone(TimeZone.getDefault()).setInstant(lastInfluxTime).build();
 			NavigableMap<Long, Integer> data = new TreeMap<>();
@@ -59,10 +59,10 @@ public class EonConsumptionToInfluxDB {
 			}
 
 			NavigableMap<Long, Integer> newData = data.tailMap(lastInfluxTime, false);
-			System.out.println(newData.size() + " new data points (lastEonTime: " + new Date(lastEonTime) + ")");
+			log(newData.size() + " new data points (lastEonTime: " + new Date(lastEonTime) + ")");
 			influxWrite(influxDbName, newData.entrySet());
 		} else {
-			System.out.println("No new data (lastEonTime: " + new Date(lastEonTime) + ")");
+			log("No new data (lastEonTime: " + new Date(lastEonTime) + ")");
 		}
 		influx.close();
 	}
@@ -73,7 +73,7 @@ public class EonConsumptionToInfluxDB {
 			if (vals.get(0).toString().equals(influxDbName))
 				return;
 		}
-		System.out.println("InfluxDB has no database '" + influxDbName + "', creating it");
+		log("InfluxDB has no database '" + influxDbName + "', creating it");
 		qres = influx.query(new Query("CREATE DATABASE " + influxDbName));
 		if (qres.hasError())
 			throw new RuntimeException("Failed creating InfluxDB database '" + influxDbName + "' > " + qres.getError());
@@ -110,7 +110,7 @@ public class EonConsumptionToInfluxDB {
 			BatchPoints bp = bpb.build();
 			influx.write(bp);
 			long t2 = System.currentTimeMillis();
-			System.out.println("Wrote " + bp.getPoints().size() + " points to InfluxDB in " + (t2 - t1) + "ms");
+			log("Wrote " + bp.getPoints().size() + " points to InfluxDB in " + (t2 - t1) + "ms");
 		}
 	}
 
@@ -156,6 +156,11 @@ public class EonConsumptionToInfluxDB {
 			eonCache.put(cacheKey, data);
 		}
 		return data;
+	}
+
+	static void log(String message) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+		System.out.println(dateFormat.format(new Date()) + ": " + message);
 	}
 
 	public static void main(String[] args) throws IOException {
