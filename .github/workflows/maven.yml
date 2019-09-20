@@ -38,9 +38,11 @@ jobs:
     - name: Read version
       run: cat target/version.txt
     - name: Docker build
-      uses: actions/docker/cli@master
+      uses: actions/docker/cli-multi@master
       with:
-        args: "build -f target/Dockerfile -t konrader/eon-consumption ."
+        args:
+        - "build -f target/Dockerfile -t konrader/eon-consumption ."
+        - "tag konrader/eon-consumption:latest konrader/eon-consumption:$(cat target/version.txt)"
     - name: Docker tag
       run: docker tag konrader/eon-consumption:latest konrader/eon-consumption:$(cat target/version.txt)
     - name: Docker login
