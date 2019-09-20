@@ -14,7 +14,6 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,20 +28,23 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class EonWebClient {
-	private final CookieManager cookieManager = new CookieManager(null, CookiePolicy.ACCEPT_ALL);
-	private final HttpClient client;
 	private final URI apiUri = URI.create("https://minasidor.eon.se/eon-online/");
-	private final Path cachePath = Paths.get("/tmp/eon");
+	private final HttpClient client;
+	private final Path cachePath;
 	private final boolean fromCache;
 	private Date contractStart = null;
 
 	public EonWebClient() {
-		client = HttpClient.newBuilder().followRedirects(Redirect.NORMAL).cookieHandler(cookieManager).build();
-		fromCache = false;
+		this(null, false);
 	}
 
-	public EonWebClient(boolean fromCache) {
-		client = null;
+	public EonWebClient(Path cachePath, boolean fromCache) {
+		if (fromCache)
+			client = null;
+		else
+			client = HttpClient.newBuilder().followRedirects(Redirect.NORMAL)
+					.cookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL)).build();
+		this.cachePath = cachePath;
 		this.fromCache = fromCache;
 	}
 
@@ -133,7 +135,8 @@ public class EonWebClient {
 
 		try {
 			HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
-			Files.writeString(cachePath.resolve(cacheName), response.body());
+			if (cachePath != null)
+				Files.writeString(cachePath.resolve(cacheName), response.body());
 			return response.body();
 		} catch (IOException e) {
 			throw e;
