@@ -38,11 +38,9 @@ jobs:
     - name: Read version
       run: cat target/version.txt
     - name: Docker build
-      uses: actions/docker/cli-multi@master
+      uses: actions/docker/cli@master
       with:
-        args:
-        - "build -f target/Dockerfile -t konrader/eon-consumption ."
-        - "tag konrader/eon-consumption:latest konrader/eon-consumption:$(cat target/version.txt)"
+        args: "build -f target/Dockerfile -t konrader/eon-consumption ."
     - name: Docker tag
       run: docker tag konrader/eon-consumption:latest konrader/eon-consumption:$(cat target/version.txt)
     - name: Docker login
@@ -51,4 +49,6 @@ jobs:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
     - name: DockerHub publish
-      run: docker push konrader/eon-consumption
+      uses: actions/docker/cli@master
+      with:
+        args: "docker push konrader/eon-consumption"
