@@ -51,4 +51,4 @@ jobs:
     - name: DockerHub publish
       uses: actions/docker/cli@master
       with:
-        args: "docker push konrader/eon-consumption"
+        args: "push konrader/eon-consumption"
